@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex min-h-screen bg-blue-50/80 backdrop-blur-sm">
+  <aside class="w-64 bg-white/30 backdrop-blur-md shadow-lg hidden md:block rounded-r-2xl">
+    <div class="p-6">
+      <h2 class="text-2xl font-bold text-blue-900 mb-6">Dashboard</h2>
+      <nav class="space-y-2">
+        <a href="{{ url_for('dashboard') }}"
+          class="block px-4 py-2 rounded-lg hover:bg-blue-100/50 transition font-medium text-blue-800">🏠 Home</a>
+        <a href="{{ url_for('product.list_products') }}"
+          class="block px-4 py-2 rounded-lg hover:bg-blue-100/50 transition font-medium text-blue-800">🛍️ Products</a>
+        <a href="{{ url_for('product.view_cart') }}"
+          class="block px-4 py-2 rounded-lg hover:bg-blue-100/50 transition font-medium text-blue-800">
+          🛒 Cart ({{ cart_items }})
+        </a>
+        <a href="{{ url_for('auth.logout') }}"
+          class="block px-4 py-2 rounded-lg hover:bg-red-100/50 transition font-medium text-red-600">🚪 Logout</a>
+      </nav>
+    </div>
+  </aside>
+  <main class="flex-1 p-6">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-blue-900">Welcome, {{ user }}!</h1>
+      <p class="text-blue-800/80 mt-2">Here’s an overview of your account and activity.</p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white/30 backdrop-blur-md p-4 rounded-2xl shadow-md hover:shadow-xl transition">
+        <h2 class="text-blue-800/80">Orders</h2>
+        <p class="text-2xl font-bold text-blue-900">{{ order_count }}</p>
+      </div>
+      <div class="bg-white/30 backdrop-blur-md p-4 rounded-2xl shadow-md hover:shadow-xl transition">
+        <h2 class="text-blue-800/80">Items in Cart</h2>
+        <p class="text-2xl font-bold text-blue-900">{{ cart_items }}</p>
+      </div>
+      <div class="bg-white/30 backdrop-blur-md p-4 rounded-2xl shadow-md hover:shadow-xl transition">
+        <h2 class="text-blue-800/80">Total Spent</h2>
+        <p class="text-2xl font-bold text-blue-900">₹{{ total_spent }}</p>
+      </div>
+      <div class="bg-white/30 backdrop-blur-md p-4 rounded-2xl shadow-md hover:shadow-xl transition">
+        <h2 class="text-blue-800/80">Wishlist</h2>
+        <p class="text-2xl font-bold text-blue-900">{{ wishlist_count }}</p>
+      </div>
+    </div>
+    <div class="mb-8">
+      <h2 class="text-xl font-semibold text-blue-900 mb-4">📦 Recent Orders</h2>
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white/30 backdrop-blur-md rounded-2xl shadow-md">
+          <thead class="bg-blue-100/50">
+            <tr>
+              <th class="px-4 py-2 text-left text-blue-800">Order ID</th>
+              <th class="px-4 py-2 text-left text-blue-800">Date</th>
+              <th class="px-4 py-2 text-left text-blue-800">Status</th>
+              <th class="px-4 py-2 text-left text-blue-800">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for order in recent_orders %}
+            <tr class="border-t border-blue-200 hover:bg-blue-50/50 transition">
+              <td class="px-4 py-2">{{ order.id }}</td>
+              <td class="px-4 py-2">{{ order.date }}</td>
+              <td class="px-4 py-2">{{ order.status }}</td>
+              <td class="px-4 py-2">₹{{ order.total }}</td>
+            </tr>
+            {% else %}
+            <tr>
+              <td class="px-4 py-2 text-blue-800/60 text-center" colspan="4">No recent orders.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <h2 class="text-xl font-semibold text-blue-900 mb-4">💡 Recommended Products</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {% for product in recommended_products %}
+        <div class="bg-white/30 backdrop-blur-md rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition">
+          {% if product.image %}
+          <img src="{{ url_for('static', filename='uploads/' + product.image) }}"
+            class="w-full h-48 object-cover rounded-t-2xl">
+          {% else %}
+          <div class="w-full h-48 bg-blue-100/50 flex items-center justify-center text-blue-700">No Image</div>
+          {% endif %}
+          <div class="p-4">
+            <h3 class="font-semibold text-blue-900">{{ product.name }}</h3>
+            <p class="text-blue-700 font-bold mt-2">₹{{ product.price }}</p>
+            <a href="{{ url_for('product.add_to_cart', product_id=product.id) }}"
+              class="w-full inline-block mt-3 bg-blue-600/80 text-white py-2 rounded-lg hover:bg-blue-700/90 transition text-center">
+              Add to Cart
+            </a>
+          </div>
+        </div>
+        {% else %}
+        <p class="text-blue-700/60 col-span-4 text-center">No recommendations available.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}

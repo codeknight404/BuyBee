@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-7xl mx-auto px-6 py-10">
+  <h1 class="text-3xl font-bold text-blue-900 mb-10 text-center">🛍️ Our Products</h1>
+  {% if products %}
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+    {% for product in products %}
+    <div
+      class="bg-white/30 backdrop-blur-md rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2 flex flex-col">
+      {% if product.image %}
+      <img src="{{ url_for('static', filename='uploads/' ~ product.image) }}" alt="{{ product.name }}"
+        class="w-full h-56 object-cover rounded-t-2xl">
+      {% else %}
+      <div class="w-full h-56 bg-blue-100/50 flex items-center justify-center text-blue-700 rounded-t-2xl">
+        No Image
+      </div>
+      {% endif %}
+      <div class="p-4 flex flex-col justify-between flex-1">
+        <div>
+          <h2 class="text-xl font-semibold text-blue-900">{{ product.name }}</h2>
+          <p class="text-blue-800 text-sm mt-2">
+            {{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}
+          </p>
+        </div>
+        <div class="mt-4 flex flex-col gap-2">
+          <p class="text-blue-600 font-bold text-lg mb-2">₹{{ product.price }}</p>
+          <form method="POST" action="{{ url_for('product.add_to_cart', product_id=product.id) }}">
+            <input type="hidden" name="quantity" value="1">
+            <button type="submit"
+              class="w-full bg-blue-600/80 text-white py-2 rounded-lg hover:bg-blue-700/90 transition shadow-lg">
+              Add to Cart
+            </button>
+          </form>
+          <a href="{{ url_for('product.product_reviews', product_id=product.id) }}"
+            class="text-sm text-blue-800 hover:underline text-center mt-1">
+            ⭐ Reviews
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="text-center text-blue-700/80 mt-20 text-lg">No products available at the moment.</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-7xl mx-auto px-6 py-10">
+    <h1 class="text-3xl font-bold text-blue-900 mb-8 text-center">🛒 Your Cart</h1>
+    {% if cart_items %}
+    
+    <div class="bg-white/30 backdrop-blur-md rounded-2xl shadow-lg p-6 space-y-6">
+        {% for item in cart_items %}
+        <div class="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4 border-b border-blue-100 pb-4">
+            
+            {% if item.image %}
+            <img src="{{ url_for('static', filename='uploads/' ~ item.image) }}" class="w-32 h-32 object-cover rounded-xl"
+                alt="{{ item.name }}">
+            {% else %}
+            <div class="w-32 h-32 bg-blue-100/50 flex items-center justify-center text-blue-700 rounded-xl">
+                No Image
+            </div>
+            {% endif %}
+
+            <div class="flex-1">
+                <h2 class="text-xl font-semibold text-blue-900">{{ item.name }}</h2>
+                <p class="text-blue-800 mt-1">₹{{ item.price }}</p>
+                <p class="text-blue-700 text-sm mt-1">Subtotal: ₹{{ (item.price * item.quantity)|round(2) }}</p>
+            </div>
+            
+            <div class="flex flex-col gap-2">
+                
+                <form method="POST" action="{{ url_for('product.remove_from_cart', product_id=item.id) }}">
+                    <button class="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition w-full" type="submit">
+                        Remove
+                    </button>
+                </form>
+
+                <form method="POST" action="{{ url_for('product.update_cart', product_id=item.id) }}">
+                    <div class="flex gap-1">
+                        <input type="number" name="quantity" min="1" value="{{ item.quantity }}"
+                            class="w-20 px-2 py-1 border border-blue-200 rounded text-center">
+                        <button class="bg-blue-600 text-white py-1 px-3 rounded hover:bg-blue-700 transition" type="submit">
+                            Update
+                        </button>
+                    </div>
+                </form>
+                
+            </div>
+        </div>
+        {% endfor %}
+        
+        <div class="text-right pt-4 border-t border-blue-200 mt-6">
+            <p class="text-xl font-bold text-blue-900">Total: ₹{{ cart_total }}</p>
+            <a href="#"
+                class="inline-block mt-2 bg-green-600 text-white py-2 px-6 rounded-lg hover:bg-green-700 transition shadow-lg">
+                Checkout
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <p class="text-center text-blue-700/80 mt-20 text-lg">Your cart is empty. 🛒</p>
+    <div class="text-center mt-6">
+        <a href="{{ url_for('product.list_products') }}"
+            class="bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition shadow-lg">
+            Browse Products
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
